@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Análisis local de mantenimiento CMMS: indicadores, Pareto, Jack-Knife e informes ejecutivos.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' blob:; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'self'">
+  <title>GMAO · Inteligencia de mantenimiento</title>
+  <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="./styles.css">
+  <script defer src="./vendor/papaparse.min.js"></script><script defer src="./vendor/exceljs.min.js"></script><script defer src="./vendor/echarts.min.js"></script><script defer src="./vendor/jspdf.umd.min.js"></script><script defer src="./vendor/jspdf.plugin.autotable.min.js"></script>
+  <script defer src="./js/core.js"></script><script defer src="./js/demo.js"></script><script defer src="./js/charts.js"></script><script defer src="./js/report.js"></script><script defer src="./js/app.js"></script>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <a class="brand" href="#"><span class="brand-mark">G</span><span>GMAO<span class="brand-caption">MAINTENANCE ANALYTICS</span></span></a>
+    <div class="nav-label">ESPACIO DE ANÁLISIS</div>
+    <nav aria-label="Secciones del análisis">
+      <a href="#overview" class="nav-item active"><span>◫</span>Resumen ejecutivo</a>
+      <a href="#resources" class="nav-item"><span>▥</span>Recursos e impacto</a>
+      <a href="#reliability" class="nav-item"><span>↗</span>Mantenibilidad</a>
+      <a href="#failures" class="nav-item"><span>▤</span>Modos de falla</a>
+      <a href="#jackknife" class="nav-item"><span>⊕</span>Jack-Knife</a>
+      <a href="#quality" class="nav-item"><span>✓</span>Calidad de datos</a>
+    </nav>
+    <div class="sidebar-footer"><span class="live-dot"></span> Procesamiento local<p>Tus archivos permanecen<br>en este navegador.</p><span class="version">MEC048H · Basado en GMAO local</span></div>
+  </aside>
+  <div class="workspace">
+    <header class="topbar"><div><span class="eyebrow">GESTIÓN DE ACTIVOS</span><span class="top-title">Panel de mantenimiento</span></div><div class="top-actions"><button id="templateBtn" class="button subtle">Descargar plantilla</button><button id="pdfBtn" class="button primary" disabled>↓ Exportar informe PDF</button></div></header>
+    <main>
+      <div class="heading-row"><div><p class="eyebrow">DE LOS DATOS A LAS DECISIONES</p><h1>El desempeño de tu mantenimiento.</h1><p class="intro">Analiza órdenes, recursos y fallas. Prioriza dónde actuar.</p></div><div class="date-badge" id="periodBadge">Sin dataset cargado</div></div>
+      <section class="upload-panel" aria-label="Cargar dataset">
+        <div id="dropZone" class="drop-zone"><div class="upload-icon">↑</div><div><h2>Carga tu dataset CMMS</h2><p>Arrastra un CSV o Excel, o selecciona un archivo. <span>Máximo 25 MB.</span></p></div><button id="chooseBtn" class="button primary">Seleccionar archivo</button><input id="fileInput" type="file" accept=".csv,.xlsx" hidden></div>
+        <div class="upload-bottom"><span id="sourceLabel">Estructura compatible con GMAO_local.ipynb</span><button id="demoBtn" class="text-button">Explorar con datos de demostración →</button></div>
+        <div id="sheetChooser" hidden><label for="sheetSelect">Hoja del Excel</label><select id="sheetSelect"></select><button id="loadSheetBtn" class="button primary">Analizar hoja</button></div>
+      </section>
+      <div id="message" class="message" role="status" aria-live="polite" hidden></div>
+      <section id="emptyState" class="empty-state"><div class="empty-art"><span></span><span></span><span></span><span></span><span></span></div><h2>Tu próximo análisis comienza aquí.</h2><p>Selecciona un dataset o explora la demostración para ver los indicadores,<br>los diagramas de Pareto y la priorización de equipos.</p><div class="empty-tags"><span>CSV y XLSX</span><span>Gráficos interactivos</span><span>Informe ejecutivo</span></div></section>
+      <div id="analysis" hidden>
+        <section class="filter-panel" aria-label="Filtros del dataset"><div class="filter-title"><strong>Filtrar análisis</strong><button id="resetBtn" class="text-button">Restablecer</button></div><div class="filters">
+          <label>Tipo de mantenimiento<select id="typeFilter"></select></label><label>Estado<select id="stateFilter"></select></label><label>Área<select id="areaFilter"></select></label><label>Unidad<select id="unitFilter"></select></label><label>Criticidad<select id="criticalFilter"></select></label>
+          <label>Creación desde<input type="date" id="startFilter"></label><label>Creación hasta<input type="date" id="endFilter"></label><label class="search-label">Buscar OT o equipo<input type="search" id="searchFilter" placeholder="Ej. U-100-P-003"></label>
+        </div><p id="filterSummary" class="filter-summary"></p></section>
+        <section id="overview" class="section"><div class="section-heading"><div><span class="section-num">01</span><h2>Resumen ejecutivo</h2></div><span class="section-caption">Indicadores del universo seleccionado</span></div><div id="kpis" class="kpi-grid"></div><div id="insight" class="insight"></div>
+          <div class="panel"><div class="panel-head"><div><h3>Una mirada a la estrategia de mantenimiento</h3><p>Participación de cada tipo en órdenes, esfuerzo, indisponibilidad y costo.</p></div><span class="pill">Mix de mantenimiento</span></div><div id="mixChart" class="chart" role="img" aria-label="Comparación por tipo de mantenimiento"></div><div id="mixTable" class="table-wrap"></div></div>
+        </section>
+        <section id="resources" class="section"><div class="section-heading"><div><span class="section-num">02</span><h2>Recursos e impacto operacional</h2></div></div><div class="two-col">
+          <div class="panel"><div class="panel-head"><div><h3>Equipos con mayor impacto</h3><p>Ordena por el recurso que quieres revisar.</p></div><label class="inline-select"><span class="sr-only">Métrica de equipos</span><select id="equipmentMetric"><option value="dt">Downtime · h</option><option value="cost">Costo directo · CLP</option><option value="hh">Horas-hombre · h</option></select></label></div><div id="equipmentChart" class="chart" role="img" aria-label="Ranking de equipos"></div></div>
+          <div class="panel"><div class="panel-head"><div><h3>Órdenes por tipo de mantenimiento</h3><p>Volumen de trabajo dentro de la selección actual.</p></div></div><div id="typeChart" class="chart" role="img" aria-label="Distribución de órdenes"></div></div>
+        </div></section>
+        <section id="reliability" class="section"><div class="section-heading"><div><span class="section-num">03</span><h2>Mantenibilidad</h2></div><span class="section-caption" id="repairCoverage"></span></div><div class="panel"><div class="panel-head"><div><h3>MTTR por familia de equipo</h3><p>Correctivos cerrados con intervalo inicio-fin válido y positivo.</p></div><span class="pill">Media y mediana</span></div><div id="mttrChart" class="chart" role="img" aria-label="MTTR por tipo de equipo"></div><div id="mttrTable" class="table-wrap"></div></div></section>
+        <section id="failures" class="section"><div class="section-heading"><div><span class="section-num">04</span><h2>Modos de falla prioritarios</h2></div><label class="inline-select">Mostrar<select id="topN"><option value="10">Top 10</option><option value="15">Top 15</option><option value="20">Top 20</option></select></label></div><div class="panel"><div class="panel-head"><div><h3>Concentración de las fallas correctivas</h3><p>El acumulado se calcula sobre todos los modos de falla del filtro.</p></div><div class="tabs" role="group" aria-label="Métrica de Pareto"><button class="tab active" data-pareto="frequency">Frecuencia</button><button class="tab" data-pareto="downtime">Downtime</button><button class="tab" data-pareto="cost">Costo directo</button></div></div><div id="paretoChart" class="chart tall" role="img" aria-label="Pareto de modos de falla"></div><div id="paretoTable" class="table-wrap"></div></div></section>
+        <section id="jackknife" class="section"><div class="section-heading"><div><span class="section-num">05</span><h2>Priorización mediante Jack-Knife</h2></div><label class="inline-select">Agrupar por<select id="jkGroup"><option value="equipment">Equipo</option><option value="failure">Modo de falla</option></select></label></div><div class="panel"><div class="panel-head"><div><h3>Frecuencia y duración de indisponibilidad</h3><p>Frecuencia normalizada frente a downtime por falla normalizado. Usa la rueda para acercar.</p></div><span class="pill">Escala logarítmica</span></div><div id="jkChart" class="chart jk-chart" role="img" aria-label="Diagrama Jack-Knife"></div><div class="quadrant-legend"><span><i class="grave"></i>Grave</span><span><i class="acute"></i>Agudo</span><span><i class="chronic"></i>Crónico</span><span><i class="controlled"></i>Bajo control</span></div><p class="method-note">En este diagrama, la duración es downtime / número de fallas; difiere del MTTR por inicio-fin. La prioridad relativa refleja concentración de downtime, no riesgo de seguridad.</p><div id="jkTable" class="table-wrap"></div></div></section>
+        <section id="quality" class="section"><div class="section-heading"><div><span class="section-num">06</span><h2>Calidad y trazabilidad</h2></div><button id="csvBtn" class="button subtle">↓ Datos tratados CSV</button></div><div class="two-col"><div class="panel"><div class="panel-head"><h3>Controles del archivo cargado</h3></div><div id="qualityTable" class="table-wrap"></div></div><div class="panel"><div class="panel-head"><h3>Cómo se calculan los indicadores</h3></div><div class="methodology"><p><strong>Una fila por OT.</strong> Se eliminan duplicados exactos y se rechazan OT repetidas con datos distintos.</p><p><strong>MTTR.</strong> Media del intervalo Fecha_fin − Fecha_inicio para correctivos cerrados válidos. La mediana usa esa misma población.</p><p><strong>Pareto.</strong> Correctivos con modo de falla. Los costos y tiempos incompletos se identifican como subtotales.</p><p><strong>Jack-Knife.</strong> Correctivos válidos para MTTR; grupos con downtime completo. Los tiempos cero se conservan en tabla y se omiten del gráfico logarítmico.</p><p><strong>MTBF y disponibilidad.</strong> Requieren horas de operación y tiempo requerido del activo. No se estiman con este dataset.</p></div></div></div></section>
+      </div>
+      <footer class="page-footer"><span>GMAO · Gestión de activos y mantenimiento</span><span>Análisis en tu navegador · Sin envío de archivos</span></footer>
+    </main>
+  </div>
+</div>
+<dialog id="reportDialog"><form method="dialog"><div class="dialog-heading"><div><p class="eyebrow">INFORME EJECUTIVO</p><h2>Prepara tu informe</h2></div><button class="icon-button" aria-label="Cerrar">×</button></div><p>El PDF incluirá la selección actual, indicadores, gráficas, Pareto, Jack-Knife y controles de calidad.</p><label>Título<input id="reportTitle" value="Informe Ejecutivo de Gestión de Mantenimiento" maxlength="110"></label><label>Instalación o unidad operativa<input id="reportUnit" placeholder="Ej. Planta industrial" maxlength="100"></label><label>Preparado por<input id="reportAuthor" placeholder="Nombre o equipo responsable" maxlength="100"></label><div id="reportScope" class="report-scope"></div><div class="dialog-actions"><button class="button subtle">Cancelar</button><button id="generatePdfBtn" type="button" class="button primary">Generar PDF</button></div></form></dialog>
+<noscript><p class="message error">Activa JavaScript en tu navegador para usar el análisis y la exportación.</p></noscript>
+</body></html>

@@ -1,0 +1,62 @@
+[
+  {
+    "file": "echarts.min.js",
+    "url": "https://unpkg.com/echarts@6.1.0/dist/echarts.min.js",
+    "bytes": 1121883,
+    "sha256": "b66b25aeb4df84e33199dc21694014d336d222cbd9deb0e5a7c14bd6aa0d0fd0"
+  },
+  {
+    "file": "papaparse.min.js",
+    "url": "https://unpkg.com/papaparse@5.7.0/papaparse.min.js",
+    "bytes": 18874,
+    "sha256": "4d5d2d6e3282b66aafaa5e6de8ca3ae06f8d3440111ae99c6a30f6c00cfac33e"
+  },
+  {
+    "file": "jspdf.umd.min.js",
+    "url": "https://unpkg.com/jspdf@4.2.1/dist/jspdf.umd.min.js",
+    "bytes": 420165,
+    "sha256": "e6551fcdc32f09d6853b2c5126d18d01d9447e0da618a41a11ebeee0f6c20d54"
+  },
+  {
+    "file": "jspdf.plugin.autotable.min.js",
+    "url": "https://unpkg.com/jspdf-autotable@5.0.8/dist/jspdf.plugin.autotable.min.js",
+    "bytes": 32389,
+    "sha256": "a65dff2c6a8296b16aff24e69f7683cd7dbaed4a4ec26b507d6840ee27d54649"
+  },
+  {
+    "file": "echarts-LICENSE.txt",
+    "url": "https://unpkg.com/echarts@6.1.0/LICENSE",
+    "bytes": 11990,
+    "sha256": "634293835b43a6dd2094fa39182a3d9a6b9ca43b7fdb9ac354e8037af2a3093a"
+  },
+  {
+    "file": "papaparse-LICENSE.txt",
+    "url": "https://unpkg.com/papaparse@5.7.0/LICENSE",
+    "bytes": 1079,
+    "sha256": "99aa68e4b42758b09828a46515f70369e5463458ab7a990189f641af2b8d9b4e"
+  },
+  {
+    "file": "jspdf-LICENSE.txt",
+    "url": "https://unpkg.com/jspdf@4.2.1/LICENSE",
+    "bytes": 1142,
+    "sha256": "dc388ec35ff463288cdde3588a36fd4ed12a45deff053243b37309acc9ef583b"
+  },
+  {
+    "file": "exceljs.min.js",
+    "url": "https://unpkg.com/exceljs@4.4.0/dist/exceljs.min.js",
+    "bytes": 947702,
+    "sha256": "7e49da68588e250dbb8bba190d2caa8ab3787cc0284bda1d8b2f805c4df742c9"
+  },
+  {
+    "file": "exceljs-LICENSE.txt",
+    "url": "https://unpkg.com/exceljs@4.4.0/LICENSE",
+    "bytes": 1084,
+    "sha256": "2ed526b7e7c7681dc2347995b5036ddf73dc27d0539cdea59b6d4a72b63a57a0"
+  },
+  {
+    "file": "autotable-LICENSE.txt",
+    "url": "https://unpkg.com/jspdf-autotable@5.0.8/LICENSE.txt",
+    "bytes": 1133,
+    "sha256": "99a374e0385cf714d2faae5f6e02ec79217c6bcecec39bdb9e102091471b960a"
+  }
+]
